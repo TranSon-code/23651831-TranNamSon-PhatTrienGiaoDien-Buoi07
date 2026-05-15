@@ -1,0 +1,24 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+export const fetchProducts = createAsyncThunk('products/fetchAll', async () => {
+  const res = await fetch('https://fakestoreapi.com/products');
+  return res.json();
+});
+
+const productSlice = createSlice({
+  name: 'products',
+  initialState: { items: [], loading: false, error: null },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => { state.loading = true; })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items = action.payload;
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = "Không thể lấy danh sách sản phẩm";
+      });
+  }
+});
+export default productSlice.reducer;
